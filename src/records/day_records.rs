@@ -1,6 +1,6 @@
 pub struct DayRecords {
-    weight: Option<f32>,
-    notes: Option<String>,
+    pub weight: Option<f32>,
+    pub notes: Option<String>,
 }
 
 #[cfg(test)]

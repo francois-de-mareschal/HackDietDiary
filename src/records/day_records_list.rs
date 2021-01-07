@@ -1,10 +1,10 @@
-use crate::records::day_records;
+use crate::records::day_records::DayRecords;
 use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
 
 pub struct DayRecordsList {
-    records: BTreeMap<DateTime<Utc>, day_records::DayRecords>,
+    records: BTreeMap<DateTime<Utc>, DayRecords>,
 }
 
 impl DayRecordsList {
@@ -14,17 +14,17 @@ impl DayRecordsList {
 
     pub fn add(
         &mut self,
-        day_records: day_records::DayRecords,
+        day_records: DayRecords,
         date: Option<DateTime<Utc>>,
-    ) -> Result<day_records::DayRecords, Box<dyn Error>> {
+    ) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 
     pub fn remove(
         &mut self,
-        day_records: day_records::DayRecords,
+        day_records: DayRecords,
         date: Option<DateTime<Utc>>,
-    ) -> Result<day_records::DayRecords, Box<dyn Error>> {
+    ) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 
@@ -32,15 +32,15 @@ impl DayRecordsList {
         &self,
         from: Option<DateTime<Utc>>,
         to: Option<DateTime<Utc>>,
-    ) -> Result<BTreeMap<DateTime<Utc>, day_records::DayRecords>, Box<dyn Error>> {
+    ) -> Result<BTreeMap<DateTime<Utc>, DayRecords>, Box<dyn Error>> {
         todo!()
     }
 }
 
 impl Iterator for DayRecordsList {
-    type Item = day_records::DayRecords;
+    type Item = DayRecords;
 
-    fn next(&mut self) -> Option<day_records::DayRecords> {
+    fn next(&mut self) -> Option<DayRecords> {
         todo!()
     }
 }
@@ -48,4 +48,17 @@ impl Iterator for DayRecordsList {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn add_today_day_record() -> Result<(), Box<dyn Error>> {
+        let mut drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let dr = DayRecords {
+            weight: Some(85.0),
+            notes: None,
+        };
+
+        drl.add(dr, None)
+    }
 }
