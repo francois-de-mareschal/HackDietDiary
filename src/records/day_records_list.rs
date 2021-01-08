@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use std::error::Error;
 
 pub struct DayRecordsList {
-    records: BTreeMap<DateTime<Utc>, DayRecords>,
+    records: BTreeMap<Date<Utc>, DayRecords>,
 }
 
 impl DayRecordsList {
@@ -15,7 +15,7 @@ impl DayRecordsList {
     pub fn add(
         &mut self,
         day_records: DayRecords,
-        date: Option<DateTime<Utc>>,
+        date: Option<Date<Utc>>,
     ) -> Result<(), Box<dyn Error>> {
         todo!()
     }
@@ -23,16 +23,16 @@ impl DayRecordsList {
     pub fn remove(
         &mut self,
         day_records: DayRecords,
-        date: Option<DateTime<Utc>>,
+        date: Option<Date<Utc>>,
     ) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 
     pub fn range(
         &self,
-        from: Option<DateTime<Utc>>,
-        to: Option<DateTime<Utc>>,
-    ) -> Result<BTreeMap<DateTime<Utc>, DayRecords>, Box<dyn Error>> {
+        from: Option<Date<Utc>>,
+        to: Option<Date<Utc>>,
+    ) -> Result<BTreeMap<Date<Utc>, DayRecords>, Box<dyn Error>> {
         todo!()
     }
 }
