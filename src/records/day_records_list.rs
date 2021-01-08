@@ -12,15 +12,11 @@ impl DayRecordsList {
         &mut self,
         day_records: DayRecords,
         date: Option<Date<Utc>>,
-    ) -> Result<(), &'static str> {
+    ) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 
-    pub fn remove(
-        &mut self,
-        day_records: DayRecords,
-        date: Option<Date<Utc>>,
-    ) -> Result<(), &'static str> {
+    pub fn remove(&mut self, date: Option<Date<Utc>>) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 
@@ -28,7 +24,7 @@ impl DayRecordsList {
         &self,
         from: Option<Date<Utc>>,
         to: Option<Date<Utc>>,
-    ) -> Result<BTreeMap<Date<Utc>, DayRecords>, &'static str> {
+    ) -> Result<BTreeMap<Date<Utc>, DayRecords>, Box<dyn Error>> {
         todo!()
     }
 }
