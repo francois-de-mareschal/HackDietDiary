@@ -7,12 +7,15 @@ use std::fmt::{self, Display};
 #[derive(Debug)]
 enum DRLError {
     DateInTheFuture(&'static str),
+    ZeroOrNegativeWeight(&'static str),
 }
 
 impl Display for DRLError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
-            DRLError::DateInTheFuture(message) => fmt::write(f, format_args!("{}", message)),
+            DRLError::DateInTheFuture(message) | DRLError::ZeroOrNegativeWeight(message) => {
+                fmt::write(f, format_args!("{}", message))
+            }
         }
     }
 }
@@ -30,12 +33,20 @@ impl DayRecordsList {
         date: Option<Date<Utc>>,
     ) -> Result<(), Box<dyn Error>> {
         let now = Utc::now().date();
-        let date = date.unwrap_or(Utc::now().date());
+        let date = date.unwrap_or(now);
 
         if date > now {
             return Err(Box::new(DRLError::DateInTheFuture(
                 "the date of the record to add is in the future",
             )));
+        }
+
+        if let Some(weight) = day_records.weight {
+            if weight <= 0_f32 {
+                return Err(Box::new(DRLError::ZeroOrNegativeWeight(
+                    "the provided weight is zero or negative",
+                )));
+            }
         }
 
         Ok(())
