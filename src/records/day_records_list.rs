@@ -2,6 +2,22 @@ use crate::records::day_records::DayRecords;
 use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
+use std::fmt::{self, Display};
+
+#[derive(Debug)]
+enum DRLError {
+    DateInTheFuture(&'static str),
+}
+
+impl Display for DRLError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self {
+            DRLError::DateInTheFuture(message) => fmt::write(f, format_args!("{}", message)),
+        }
+    }
+}
+
+impl Error for DRLError {}
 
 pub struct DayRecordsList {
     records: BTreeMap<Date<Utc>, DayRecords>,
@@ -13,7 +29,16 @@ impl DayRecordsList {
         day_records: DayRecords,
         date: Option<Date<Utc>>,
     ) -> Result<(), Box<dyn Error>> {
-        todo!()
+        let now = Utc::now().date();
+        let date = date.unwrap_or(Utc::now().date());
+
+        if date > now {
+            return Err(Box::new(DRLError::DateInTheFuture(
+                "the date of the record to add is in the future",
+            )));
+        }
+
+        Ok(())
     }
 
     pub fn remove(&mut self, date: Option<Date<Utc>>) -> Result<(), Box<dyn Error>> {
