@@ -427,4 +427,56 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn range_from_lt_first_record_date() -> Result<(), Box<dyn Error>> {
+        let mut drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let first_dr = DayRecords {
+            weight: Some(85.0),
+            notes: None,
+        };
+        let second_dr = DayRecords {
+            weight: Some(80.0),
+            notes: None,
+        };
+        let search_date = Utc.ymd(1994, 05, 18);
+        let first_date = Utc.ymd(2003, 05, 11);
+        let last_date = Utc::now().date();
+        drl.records.insert(first_date, first_dr.clone());
+        drl.records.insert(last_date, second_dr.clone());
+
+        let btm = drl.range(Some(search_date), Some(last_date))?.unwrap();
+
+        assert_eq!(btm.get(&first_date).unwrap(), &first_dr);
+
+        Ok(())
+    }
+
+    #[test]
+    fn range_to_gt_last_record_date() -> Result<(), Box<dyn Error>> {
+        let mut drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let first_dr = DayRecords {
+            weight: Some(85.0),
+            notes: None,
+        };
+        let second_dr = DayRecords {
+            weight: Some(80.0),
+            notes: None,
+        };
+        let search_date = Utc::now().date();
+        let first_date = Utc.ymd(1994, 05, 18);
+        let last_date = Utc.ymd(2003, 05, 11);
+        drl.records.insert(first_date, first_dr.clone());
+        drl.records.insert(last_date, second_dr.clone());
+
+        let btm = drl.range(Some(first_date), Some(search_date))?.unwrap();
+
+        assert_eq!(btm.get(&last_date).unwrap(), &second_dr);
+
+        Ok(())
+    }
 }
