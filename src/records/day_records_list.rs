@@ -24,7 +24,7 @@ impl DayRecordsList {
         &self,
         from: Option<Date<Utc>>,
         to: Option<Date<Utc>>,
-    ) -> Result<BTreeMap<Date<Utc>, DayRecords>, Box<dyn Error>> {
+    ) -> Result<Option<BTreeMap<Date<Utc>, DayRecords>>, Box<dyn Error>> {
         todo!()
     }
 }
@@ -32,6 +32,7 @@ impl DayRecordsList {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::Duration;
 
     #[test]
     fn add_today_day_records() -> Result<(), Box<dyn Error>> {
@@ -360,5 +361,70 @@ mod tests {
 
         drl.records.insert(date, dr);
         drl.remove(Some(date)).unwrap();
+    }
+
+    #[test]
+    fn range_from_lt_to_records_existent() -> Result<(), Box<dyn Error>> {
+        let mut drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let dr = DayRecords {
+            weight: Some(85.0),
+            notes: None,
+        };
+        let date = Utc::now().date();
+        drl.records.insert(date, dr.clone());
+
+        let btm = drl.range(None, Some(date))?.unwrap();
+
+        assert_eq!(*btm.get(&date).unwrap(), dr);
+
+        Ok(())
+    }
+
+    #[test]
+    fn range_from_lt_to_records_non_existent() {
+        let drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let date = Utc::now().date();
+
+        let btm = drl.range(None, Some(date)).unwrap();
+
+        assert_eq!(btm, None)
+    }
+
+    #[test]
+    #[should_panic(expected = "the start date must be before the end date")]
+    fn range_from_gt_to() {
+        let drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let start_date = Utc::now().date();
+        let end_date = start_date - Duration::days(1);
+
+        drl.range(Some(start_date), Some(end_date));
+    }
+
+    #[test]
+    fn range_from_eq_to() -> Result<(), Box<dyn Error>> {
+        let mut drl = DayRecordsList {
+            records: BTreeMap::new(),
+        };
+        let dr = DayRecords {
+            weight: Some(85.0),
+            notes: None,
+        };
+        let date = Utc.ymd(1994, 05, 18);
+        drl.records.insert(date, dr.clone());
+
+        let btm = drl.range(Some(date), Some(date))?.unwrap();
+
+        assert_eq!(
+            btm.values().find(|&value_records| value_records == &dr),
+            Some(&dr)
+        );
+
+        Ok(())
     }
 }
