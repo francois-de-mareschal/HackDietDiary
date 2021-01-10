@@ -20,9 +20,38 @@ description of the method is in the book, anyway. It worked for me.
 
 ## The Hacker's Diet Diary
 
+The Hacker's Diet Diary is an implementation of the set of tools described in the book. It is
+intended to provide an extremely fast way to record the weight on the morning.
+
 ### Objectives
 
-### Build
+- allow to store as fast as possible (from the user's point of view) the measured constants,
+like the weight;
+- provide feedback to adjust the meals;
+- define weight loss objectives;
+- view the recorded data to measure progress.
+
+### Build & Contributing
+
+#### Build
+
+The project is developed in Rust; after cloning the repository:
+
+```shell
+# Run the unit tests suite.
+cargo test
+# Build the whole project.
+cargo build --release
+# Run (command-line arguments and options to be defined).
+cargo run --release -- # commands
+```
+
+#### Contributing
+
+All the Rust source files are formatted by ```rustfmt``` with all default parameters.
+
+This project uses the [GitLab flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html).
+
 
 ## License
 
