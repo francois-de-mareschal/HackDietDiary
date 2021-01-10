@@ -8,6 +8,7 @@ use std::fmt::{self, Display};
 enum DRLError {
     DateInTheFuture(&'static str),
     DayRecordsEmpty(&'static str),
+    NoDayRecordsAtDate(&'static str),
     ZeroOrNegativeWeight(&'static str),
 }
 
@@ -16,7 +17,8 @@ impl Display for DRLError {
         match &self {
             DRLError::DateInTheFuture(message)
             | DRLError::ZeroOrNegativeWeight(message)
-            | DRLError::DayRecordsEmpty(message) => fmt::write(f, format_args!("{}", message)),
+            | DRLError::DayRecordsEmpty(message)
+            | DRLError::NoDayRecordsAtDate(message) => fmt::write(f, format_args!("{}", message)),
         }
     }
 }
@@ -56,11 +58,30 @@ impl DayRecordsList {
             )));
         }
 
+        self.records.insert(date, day_records);
+
         Ok(())
     }
 
     pub fn remove(&mut self, date: Option<Date<Utc>>) -> Result<(), Box<dyn Error>> {
-        todo!()
+        let now = Utc::now().date();
+        let date = date.unwrap_or(now);
+
+        if date > now {
+            return Err(Box::new(DRLError::DateInTheFuture(
+                "the date of the record to remove is in the future",
+            )));
+        }
+
+        if let None = self.records.keys().find(|&key_date| key_date == &date) {
+            return Err(Box::new(DRLError::NoDayRecordsAtDate(
+                "there are no records to remove for this date",
+            )));
+        }
+
+        self.records.remove(&date);
+
+        Ok(())
     }
 
     pub fn range(
@@ -400,7 +421,7 @@ mod tests {
             weight: Some(85.0),
             notes: None,
         };
-        let date = Utc.ymd(1994, 05, 18);
+        let date = Utc.ymd(3994, 05, 18);
 
         drl.records.insert(date, dr);
         drl.remove(Some(date)).unwrap();
