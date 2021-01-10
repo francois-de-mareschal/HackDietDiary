@@ -8,10 +8,10 @@ Calc / Microsoft Excel sheets-based diet diaries.
 ### What is it?
 
 The [Hacker's Diet](https://www.fourmilab.ch/hackdiet/e4) is a method to lose weight
-designed as an engineering project. The author does not sell anything, he provides a
-method and a set of tools to measure and manage the weight loss. By measuring the
-weight on a daily basis, these tools provide a trend, bullish or bearish, and the excess or
-deficit of ingested calories. It only remains to adjust the meals.
+designed as an engineering project for engineers. The author does not sell anything,
+he provides a method and a set of tools to measure and manage the weight loss. 
+By measuring the weight on a daily basis, these tools provide a trend, bullish or bearish, 
+and the excess or deficit of ingested calories. It only remains to adjust the meals.
 
 ### Does it works?
 
