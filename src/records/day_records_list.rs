@@ -7,15 +7,16 @@ use std::fmt::{self, Display};
 #[derive(Debug)]
 enum DRLError {
     DateInTheFuture(&'static str),
+    DayRecordsEmpty(&'static str),
     ZeroOrNegativeWeight(&'static str),
 }
 
 impl Display for DRLError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
-            DRLError::DateInTheFuture(message) | DRLError::ZeroOrNegativeWeight(message) => {
-                fmt::write(f, format_args!("{}", message))
-            }
+            DRLError::DateInTheFuture(message)
+            | DRLError::ZeroOrNegativeWeight(message)
+            | DRLError::DayRecordsEmpty(message) => fmt::write(f, format_args!("{}", message)),
         }
     }
 }
@@ -47,6 +48,12 @@ impl DayRecordsList {
                     "the provided weight is zero or negative",
                 )));
             }
+        }
+
+        if day_records.weight == None && day_records.notes == None {
+            return Err(Box::new(DRLError::DayRecordsEmpty(
+                "provided day records are empty",
+            )));
         }
 
         Ok(())
