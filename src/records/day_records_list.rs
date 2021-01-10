@@ -9,6 +9,7 @@ enum DRLError {
     DateInTheFuture(&'static str),
     DayRecordsEmpty(&'static str),
     NoDayRecordsAtDate(&'static str),
+    StartDateAfterEndDate(&'static str),
     ZeroOrNegativeWeight(&'static str),
 }
 
@@ -18,7 +19,10 @@ impl Display for DRLError {
             DRLError::DateInTheFuture(message)
             | DRLError::ZeroOrNegativeWeight(message)
             | DRLError::DayRecordsEmpty(message)
-            | DRLError::NoDayRecordsAtDate(message) => fmt::write(f, format_args!("{}", message)),
+            | DRLError::NoDayRecordsAtDate(message)
+            | DRLError::StartDateAfterEndDate(message) => {
+                fmt::write(f, format_args!("{}", message))
+            }
         }
     }
 }
@@ -89,7 +93,28 @@ impl DayRecordsList {
         from: Option<Date<Utc>>,
         to: Option<Date<Utc>>,
     ) -> Result<Option<BTreeMap<Date<Utc>, DayRecords>>, Box<dyn Error>> {
-        todo!()
+        let now = Utc::now().date();
+        let from = from.unwrap_or(now);
+        let to = to.unwrap_or(now);
+
+        if from > to {
+            return Err(Box::new(DRLError::StartDateAfterEndDate(
+                "the start date must be before the end date",
+            )));
+        }
+
+        let mut day_records_range = BTreeMap::<Date<Utc>, DayRecords>::new();
+        for (key_date, value_records) in &self.records {
+            if key_date >= &from && key_date <= &to {
+                day_records_range.insert(key_date.clone(), value_records.clone());
+            }
+        }
+
+        if day_records_range.is_empty() {
+            return Ok(None);
+        } else {
+            return Ok(Some(day_records_range));
+        }
     }
 }
 
@@ -467,7 +492,7 @@ mod tests {
         let start_date = Utc::now().date();
         let end_date = start_date - Duration::days(1);
 
-        drl.range(Some(start_date), Some(end_date));
+        drl.range(Some(start_date), Some(end_date)).unwrap();
     }
 
     #[test]
