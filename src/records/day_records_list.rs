@@ -110,11 +110,11 @@ impl DayRecordsList {
             }
         }
 
-        if day_records_range.is_empty() {
-            return Ok(None);
+        return if day_records_range.is_empty() {
+            Ok(None)
         } else {
-            return Ok(Some(day_records_range));
-        }
+            Ok(Some(day_records_range))
+        };
     }
 }
 
