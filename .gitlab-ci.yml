@@ -1,0 +1,55 @@
+stages:
+  - static-checks
+  - test
+  - staging
+
+before_script:
+  - rustc --version
+  - cargo --version
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/.cargo/
+
+cache:
+  paths:
+    - $CARGO_HOME
+    - $CI_PROJECT_DIR/target/
+
+static-check-clippy:
+  stage: static-checks
+  image: rust:latest
+  allow_failure: true
+  script:
+    - rustup component add clippy
+
+static-check-fmt:
+  stage: static-checks
+  image: rust:latest
+  allow_failure: true
+  script:
+    - rustup component add rustfmt
+    - cargo fmt --all --verbose -- --check
+
+test-rust-latest:
+  stage: test
+  image: rust:latest
+  script:
+    - cargo test --all --verbose
+
+test-rust-nightly:
+  stage: test
+  image: rustlang/rust:nightly
+  script:
+    - cargo test --all --verbose
+  allow_failure: true
+
+build-rust-latest-staging:
+  stage: staging
+  image: rust:latest
+  only:
+    - master
+  script:
+    - cargo build --release
+  artifacts:
+    paths:
+      - target/release
