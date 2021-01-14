@@ -8,8 +8,8 @@ before_script:
   - cargo --version --verbose
 
 variables:
-  CARGO_HOME: $CI_PROJECT_DIR/.cargo/
-  CARGO_BUILD_TARGET_DIR: $CI_PROJECT_DIR/$CI_JOB_STAGE/target/
+  CARGO_HOME: $CI_PROJECT_DIR/cargo/
+  CARGO_BUILD_TARGET_DIR: $CI_PROJECT_DIR/target/
 
 cache:
   paths:
@@ -48,12 +48,10 @@ test-rust-nightly:
 build-rust-latest-staging:
   stage: staging
   image: rust:latest
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
   script:
-    - cargo build --release
-  variables:
-    CARGO_BUILD_TARGET_DIR: $CI_PROJECT_DIR/$CI_JOB_STAGE/target/
+    - cargo build
   artifacts:
     paths:
-      - target/$CI_JOB_STAGE
+      - $CARGO_BUILD_TARGET_DIR
