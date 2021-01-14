@@ -7,18 +7,14 @@ use std::fmt::{self, Display};
 #[derive(Debug)]
 enum DRLError {
     DateInTheFuture(&'static str),
-    DayRecordsEmpty(&'static str),
     NoDayRecordsAtDate(&'static str),
     StartDateAfterEndDate(&'static str),
-    ZeroOrNegativeWeight(&'static str),
 }
 
 impl Display for DRLError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
             DRLError::DateInTheFuture(message)
-            | DRLError::ZeroOrNegativeWeight(message)
-            | DRLError::DayRecordsEmpty(message)
             | DRLError::NoDayRecordsAtDate(message)
             | DRLError::StartDateAfterEndDate(message) => {
                 fmt::write(f, format_args!("{}", message))
@@ -45,20 +41,6 @@ impl DayRecordsList {
         if date > now {
             return Err(Box::new(DRLError::DateInTheFuture(
                 "the date of the record to add is in the future",
-            )));
-        }
-
-        if let Some(weight) = day_records.weight {
-            if weight <= 0_f32 {
-                return Err(Box::new(DRLError::ZeroOrNegativeWeight(
-                    "the provided weight is zero or negative",
-                )));
-            }
-        }
-
-        if day_records.weight == None && day_records.notes == None {
-            return Err(Box::new(DRLError::DayRecordsEmpty(
-                "provided day records are empty",
             )));
         }
 
@@ -258,94 +240,6 @@ mod tests {
         assert_eq!(*drl.records.get(&date).unwrap(), dr_second);
 
         Ok(())
-    }
-
-    #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
-    fn add_today_day_records_negative_weight() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: Some(-85.0),
-            notes: None,
-        };
-
-        drl.add(dr, None).unwrap();
-    }
-
-    #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
-    fn add_today_day_records_negative_weight_specifying_current_date() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: Some(-85.0),
-            notes: None,
-        };
-        let date = Utc::now().date();
-
-        drl.add(dr, Some(date)).unwrap();
-    }
-
-    #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
-    fn add_someday_day_records_negative_weight() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: Some(-85.0),
-            notes: None,
-        };
-        let date = Utc.ymd(1994, 05, 18);
-
-        drl.add(dr, Some(date)).unwrap();
-    }
-
-    #[test]
-    #[should_panic(expected = "provided day records are empty")]
-    fn add_today_empty_day_records() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: None,
-            notes: None,
-        };
-
-        drl.add(dr, None).unwrap();
-    }
-
-    #[test]
-    #[should_panic(expected = "provided day records are empty")]
-    fn add_today_empty_day_records_specifying_current_date() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: None,
-            notes: None,
-        };
-        let date = Utc::now().date();
-
-        drl.add(dr, Some(date)).unwrap();
-    }
-
-    #[test]
-    #[should_panic(expected = "provided day records are empty")]
-    fn add_someday_empty_day_records() {
-        let mut drl = DayRecordsList {
-            records: BTreeMap::new(),
-        };
-        let dr = DayRecords {
-            weight: None,
-            notes: None,
-        };
-        let date = Utc.ymd(1994, 05, 18);
-
-        drl.add(dr, Some(date)).unwrap();
     }
 
     #[test]
