@@ -28,28 +28,49 @@ pub struct Report {
 
 impl Report {
     pub fn new() -> Report {
-        todo!()
+        Report {
+            weight: None,
+            notes: None,
+        }
     }
 
     pub fn weight(&mut self, weight: f32) -> &mut Report {
-        todo!();
+        self.weight = Some(weight);
 
         self
     }
 
     pub fn notes(&mut self, notes: String) -> &mut Report {
-        todo!();
+        self.notes = Some(notes);
 
         self
     }
 
     pub fn record(&self) -> Result<DayRecords, Box<dyn Error>> {
-        todo!();
-
-        Ok(DayRecords {
+        let mut day_records = DayRecords {
             weight: None,
             notes: None,
-        })
+        };
+
+        if let Some(weight) = self.weight {
+            if weight <= 0_f32 {
+                return Err(Box::new(ReportError::ZeroOrNegativeWeight(
+                    "the provided weight is zero or negative",
+                )));
+            }
+        }
+
+        if self.weight == None && self.notes == None {
+            return Err(Box::new(ReportError::DayRecordsEmpty(
+                "provided day records are empty",
+            )));
+        }
+
+        day_records.weight = self.weight;
+        day_records.notes = self.notes.clone();
+
+        let day_records = day_records;
+        Ok(day_records)
     }
 }
 
@@ -112,19 +133,6 @@ mod tests {
     }
 
     #[test]
-    fn weight_notes_builder_empty() {
-        let mut report = Report::new();
-
-        assert_eq!(
-            report,
-            Report {
-                weight: None,
-                notes: None,
-            }
-        );
-    }
-
-    #[test]
     #[should_panic(expected = "provided day records are empty")]
     fn report_record_empty() {
         let mut report = Report::new();
@@ -158,7 +166,7 @@ mod tests {
     #[should_panic(expected = "the provided weight is zero or negative")]
     fn weight_zero_with_some_notes() {
         let result = Report::new()
-            .weight(-85.0)
+            .weight(0.0)
             .notes(String::from("Bonum vinum laetificat cor hominis."))
             .record()
             .unwrap();
