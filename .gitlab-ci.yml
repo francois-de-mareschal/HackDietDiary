@@ -4,16 +4,17 @@ stages:
   - staging
 
 before_script:
-  - rustc --version
-  - cargo --version
+  - rustc --version --verbose
+  - cargo --version --verbose
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/.cargo/
+  CARGO_BUILD_TARGET_DIR: $CI_PROJECT_DIR/$CI_JOB_STAGE/target/
 
 cache:
   paths:
     - $CARGO_HOME
-    - $CI_PROJECT_DIR/target/
+    - $CARGO_BUILD_TARGET_DIR
 
 static-check-clippy:
   stage: static-checks
@@ -21,6 +22,7 @@ static-check-clippy:
   allow_failure: true
   script:
     - rustup component add clippy
+    - cargo clippy --verbose -- --all
 
 static-check-fmt:
   stage: static-checks
@@ -50,6 +52,8 @@ build-rust-latest-staging:
     - master
   script:
     - cargo build --release
+  variables:
+    CARGO_BUILD_TARGET_DIR: $CI_PROJECT_DIR/$CI_JOB_STAGE/target/
   artifacts:
     paths:
-      - target/release
+      - target/$CI_JOB_STAGE
