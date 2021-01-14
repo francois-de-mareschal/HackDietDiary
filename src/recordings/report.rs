@@ -135,7 +135,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "provided day records are empty")]
     fn report_record_empty() {
-        let mut report = Report::new();
+        let report = Report::new();
 
         report.record().unwrap();
     }
@@ -143,19 +143,19 @@ mod tests {
     #[test]
     #[should_panic(expected = "the provided weight is zero or negative")]
     fn weight_negative_no_notes() {
-        let result = Report::new().weight(-85.0).record().unwrap();
+        let _result = Report::new().weight(-85.0).record().unwrap();
     }
 
     #[test]
     #[should_panic(expected = "the provided weight is zero or negative")]
     fn weight_zero_no_notes() {
-        let result = Report::new().weight(0.0).record().unwrap();
+        let _result = Report::new().weight(0.0).record().unwrap();
     }
 
     #[test]
     #[should_panic(expected = "the provided weight is zero or negative")]
     fn weight_negative_with_some_notes() {
-        let result = Report::new()
+        let _result = Report::new()
             .weight(-85.0)
             .notes(String::from("Vanum est vobis ante lucem surgere."))
             .record()
@@ -165,7 +165,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "the provided weight is zero or negative")]
     fn weight_zero_with_some_notes() {
-        let result = Report::new()
+        let _result = Report::new()
             .weight(0.0)
             .notes(String::from("Bonum vinum laetificat cor hominis."))
             .record()
