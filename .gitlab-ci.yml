@@ -22,7 +22,7 @@ static-check-clippy:
   allow_failure: true
   script:
     - rustup component add clippy
-    - cargo clippy --verbose -- --all
+    - cargo clippy --verbose
 
 static-check-fmt:
   stage: static-checks
