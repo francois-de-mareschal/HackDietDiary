@@ -3,14 +3,14 @@ mod day_records_list;
 mod report;
 
 mod error {
-    use chrono::prelude::*;
+    use chrono::{Date, Utc};
     use std::error::Error;
     use std::fmt::{self, Display};
 
     #[derive(Debug)]
     enum RecordingsError {
-        DateToAddInTheFuture(Date<Utc>),
-        DateToRemoveInTheFuture(Date<Utc>),
+        DateAddingInTheFuture(Date<Utc>),
+        DateRemovingInTheFuture(Date<Utc>),
         DayRecordsEmpty,
         NoDayRecordsAtDate(Date<Utc>),
         StartDateAfterEndDate {
@@ -23,11 +23,11 @@ mod error {
     impl Display for RecordingsError {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match &self {
-                RecordingsError::DateToAddInTheFuture(date) => fmt::write(
+                RecordingsError::DateAddingInTheFuture(date) => fmt::write(
                     f,
                     format_args!("The date of the record to add is in the future: {}.", date),
                 ),
-                RecordingsError::DateToRemoveInTheFuture(date) => fmt::write(
+                RecordingsError::DateRemovingInTheFuture(date) => fmt::write(
                     f,
                     format_args!(
                         "The date of the record to remove is in the future: {}.",
