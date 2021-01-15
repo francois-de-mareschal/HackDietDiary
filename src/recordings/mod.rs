@@ -9,7 +9,8 @@ mod error {
 
     #[derive(Debug)]
     enum RecordingsError {
-        DateInTheFuture(Date<Utc>),
+        DateToAddInTheFuture(Date<Utc>),
+        DateToRemoveInTheFuture(Date<Utc>),
         DayRecordsEmpty,
         NoDayRecordsAtDate(Date<Utc>),
         StartDateAfterEndDate {
@@ -20,16 +21,40 @@ mod error {
     }
 
     impl Display for RecordingsError {
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match &self {
-                RecordingsError::DateInTheFuture(date) => todo!(),
-                RecordingsError::DayRecordsEmpty => todo!(),
-                RecordingsError::NoDayRecordsAtDate(date) => todo!(),
+                RecordingsError::DateToAddInTheFuture(date) => fmt::write(
+                    f,
+                    format_args!("The date of the record to add is in the future: {}.", date),
+                ),
+                RecordingsError::DateToRemoveInTheFuture(date) => fmt::write(
+                    f,
+                    format_args!(
+                        "The date of the record to remove is in the future: {}.",
+                        date
+                    ),
+                ),
+                RecordingsError::DayRecordsEmpty => {
+                    fmt::write(f, format_args!("Provided day records are empty."))
+                }
+                RecordingsError::NoDayRecordsAtDate(date) => fmt::write(
+                    f,
+                    format_args!("There are no records to remove for this date: {}.", date),
+                ),
                 RecordingsError::StartDateAfterEndDate {
                     start_date,
                     end_date,
-                } => todo!(),
-                RecordingsError::ZeroOrNegativeWeight(weight) => todo!(),
+                } => fmt::write(
+                    f,
+                    format_args!(
+                        "The start date {} is before the end date {}.",
+                        start_date, end_date
+                    ),
+                ),
+                RecordingsError::ZeroOrNegativeWeight(weight) => fmt::write(
+                    f,
+                    format_args!("The provided weight is zero or negative: {}.", weight),
+                ),
             }
         }
     }
