@@ -1,29 +1,8 @@
 use crate::recordings::day_records::DayRecords;
+use crate::recordings::error::RecordingsError;
 use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
-use std::fmt::{self, Display};
-
-#[derive(Debug)]
-enum DRLError {
-    DateInTheFuture(&'static str),
-    NoDayRecordsAtDate(&'static str),
-    StartDateAfterEndDate(&'static str),
-}
-
-impl Display for DRLError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            DRLError::DateInTheFuture(message)
-            | DRLError::NoDayRecordsAtDate(message)
-            | DRLError::StartDateAfterEndDate(message) => {
-                fmt::write(f, format_args!("{}", message))
-            }
-        }
-    }
-}
-
-impl Error for DRLError {}
 
 pub struct DayRecordsList {
     records: BTreeMap<Date<Utc>, DayRecords>,
@@ -39,9 +18,7 @@ impl DayRecordsList {
         let date = date.unwrap_or(now);
 
         if date > now {
-            return Err(Box::new(DRLError::DateInTheFuture(
-                "the date of the record to add is in the future",
-            )));
+            return Err(Box::new(RecordingsError::DateAddingInTheFuture(date)));
         }
 
         self.records.insert(date, day_records);
@@ -54,15 +31,16 @@ impl DayRecordsList {
         let date = date.unwrap_or(now);
 
         if date > now {
-            return Err(Box::new(DRLError::DateInTheFuture(
-                "the date of the record to remove is in the future",
-            )));
+            return Err(Box::new(RecordingsError::DateRemovingInTheFuture(date)));
         }
 
-        if let None = self.records.keys().find(|&key_date| key_date == &date) {
-            return Err(Box::new(DRLError::NoDayRecordsAtDate(
-                "there are no records to remove for this date",
-            )));
+        if self
+            .records
+            .keys()
+            .find(|&key_date| key_date == &date)
+            .is_none()
+        {
+            return Err(Box::new(RecordingsError::NoDayRecordsAtDate(date)));
         }
 
         self.records.remove(&date);
@@ -80,9 +58,10 @@ impl DayRecordsList {
         let to = to.unwrap_or(now);
 
         if from > to {
-            return Err(Box::new(DRLError::StartDateAfterEndDate(
-                "the start date must be before the end date",
-            )));
+            return Err(Box::new(RecordingsError::StartDateAfterEndDate {
+                start_date: from,
+                end_date: to,
+            }));
         }
 
         let mut day_records_range = BTreeMap::<Date<Utc>, DayRecords>::new();
@@ -159,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "the date of the record to add is in the future")]
+    #[should_panic(expected = "DateAddingInTheFuture(3994-05-18Z)")]
     fn add_future_day_records() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -262,7 +241,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "there are no records to remove for this date")]
+    #[should_panic(expected = "NoDayRecordsAtDate(2021-01-15Z)")]
     fn remove_today_non_existent_records() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -290,7 +269,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "there are no records to remove for this date")]
+    #[should_panic(expected = "NoDayRecordsAtDate(2021-01-15Z)")]
     fn remove_today_non_existent_records_specifying_current_date() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -320,7 +299,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "there are no records to remove for this date")]
+    #[should_panic(expected = "NoDayRecordsAtDate(1994-05-18Z)")]
     fn remove_someday_non_existent_records() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -331,7 +310,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "the date of the record to remove is in the future")]
+    #[should_panic(expected = "DateRemovingInTheFuture(3994-05-18Z)")]
     fn remove_future_day_records() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -378,7 +357,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "the start date must be before the end date")]
+    #[should_panic(
+        expected = "StartDateAfterEndDate { start_date: 2021-01-15Z, end_date: 2021-01-14Z }"
+    )]
     fn range_from_gt_to() {
         let drl = DayRecordsList {
             records: BTreeMap::new(),

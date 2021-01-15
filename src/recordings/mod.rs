@@ -8,7 +8,7 @@ mod error {
     use std::fmt::{self, Display};
 
     #[derive(Debug)]
-    enum RecordingsError {
+    pub(crate) enum RecordingsError {
         DateAddingInTheFuture(Date<Utc>),
         DateRemovingInTheFuture(Date<Utc>),
         DayRecordsEmpty,
