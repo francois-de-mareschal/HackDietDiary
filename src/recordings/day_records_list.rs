@@ -4,7 +4,7 @@ use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
 
-pub struct DayRecordsList {
+pub(in crate::recordings) struct DayRecordsList {
     records: BTreeMap<Date<Utc>, DayRecords>,
 }
 

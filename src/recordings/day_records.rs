@@ -1,5 +1,5 @@
 #[derive(Clone, Debug, PartialEq)]
-pub struct DayRecords {
-    pub weight: Option<f32>,
-    pub notes: Option<String>,
+pub(in crate::recordings) struct DayRecords {
+    pub(in crate::recordings) weight: Option<f32>,
+    pub(in crate::recordings) notes: Option<String>,
 }
