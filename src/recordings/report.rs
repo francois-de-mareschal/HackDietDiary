@@ -1,24 +1,6 @@
 use crate::recordings::day_records::DayRecords;
+use crate::recordings::error::RecordingsError;
 use std::error::Error;
-use std::fmt::{self, Display};
-
-#[derive(Debug)]
-enum ReportError {
-    DayRecordsEmpty(&'static str),
-    ZeroOrNegativeWeight(&'static str),
-}
-
-impl Display for ReportError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            ReportError::DayRecordsEmpty(message) | ReportError::ZeroOrNegativeWeight(message) => {
-                fmt::write(f, format_args!("{}", message))
-            }
-        }
-    }
-}
-
-impl Error for ReportError {}
 
 #[derive(Debug, PartialEq)]
 pub struct Report {
@@ -54,16 +36,12 @@ impl Report {
 
         if let Some(weight) = self.weight {
             if weight <= 0_f32 {
-                return Err(Box::new(ReportError::ZeroOrNegativeWeight(
-                    "the provided weight is zero or negative",
-                )));
+                return Err(Box::new(RecordingsError::ZeroOrNegativeWeight(weight)));
             }
         }
 
         if self.weight == None && self.notes == None {
-            return Err(Box::new(ReportError::DayRecordsEmpty(
-                "provided day records are empty",
-            )));
+            return Err(Box::new(RecordingsError::DayRecordsEmpty));
         }
 
         day_records.weight = self.weight;
@@ -133,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "provided day records are empty")]
+    #[should_panic(expected = "DayRecordsEmpty")]
     fn report_record_empty() {
         let report = Report::new();
 
@@ -141,19 +119,19 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
+    #[should_panic(expected = "ZeroOrNegativeWeight(-85.0)")]
     fn weight_negative_no_notes() {
         let _result = Report::new().weight(-85.0).record().unwrap();
     }
 
     #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
+    #[should_panic(expected = "ZeroOrNegativeWeight(0.0)")]
     fn weight_zero_no_notes() {
         let _result = Report::new().weight(0.0).record().unwrap();
     }
 
     #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
+    #[should_panic(expected = "ZeroOrNegativeWeight(-85.0)")]
     fn weight_negative_with_some_notes() {
         let _result = Report::new()
             .weight(-85.0)
@@ -163,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "the provided weight is zero or negative")]
+    #[should_panic(expected = "ZeroOrNegativeWeight(0.0)")]
     fn weight_zero_with_some_notes() {
         let _result = Report::new()
             .weight(0.0)
