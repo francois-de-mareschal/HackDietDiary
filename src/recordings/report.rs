@@ -3,7 +3,7 @@ use crate::recordings::error::RecordingsError;
 use std::error::Error;
 
 #[derive(Debug, PartialEq)]
-pub(in crate::recordings) struct Report {
+pub struct Report {
     pub(in crate::recordings) weight: Option<f32>,
     pub(in crate::recordings) notes: Option<String>,
 }
