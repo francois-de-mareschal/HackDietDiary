@@ -2,13 +2,17 @@ mod day_records;
 mod day_records_list;
 mod report;
 
+pub use day_records::DayRecords;
+pub use error::RecordingsError;
+pub use report::Report;
+
 mod error {
     use chrono::{Date, Utc};
     use std::error::Error;
     use std::fmt::{self, Display};
 
     #[derive(Debug)]
-    pub(crate) enum RecordingsError {
+    pub enum RecordingsError {
         DateAddingInTheFuture(Date<Utc>),
         DateRemovingInTheFuture(Date<Utc>),
         DayRecordsEmpty,

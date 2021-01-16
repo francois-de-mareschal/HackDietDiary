@@ -4,8 +4,8 @@ use std::error::Error;
 
 #[derive(Debug, PartialEq)]
 pub struct Report {
-    pub weight: Option<f32>,
-    pub notes: Option<String>,
+    pub(in crate::recordings) weight: Option<f32>,
+    pub(in crate::recordings) notes: Option<String>,
 }
 
 impl Report {
