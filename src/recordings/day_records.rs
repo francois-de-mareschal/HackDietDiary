@@ -27,8 +27,6 @@ mod tests {
     use super::*;
     use std::error::Error;
 
-    use crate::recordings::Report;
-
     #[test]
     fn weight_some_value() {
         let day_records = DayRecords {
