@@ -241,7 +241,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NoDayRecordsAtDate(2021-01-15Z)")]
+    #[should_panic(expected = "NoDayRecordsAtDate(", ")")]
     fn remove_today_non_existent_records() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -269,7 +269,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NoDayRecordsAtDate(2021-01-15Z)")]
+    #[should_panic(expected = "NoDayRecordsAtDate(", ")")]
     fn remove_today_non_existent_records_specifying_current_date() {
         let mut drl = DayRecordsList {
             records: BTreeMap::new(),
@@ -357,9 +357,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(
-        expected = "StartDateAfterEndDate { start_date: 2021-01-15Z, end_date: 2021-01-14Z }"
-    )]
+    #[should_panic(expected = "StartDateAfterEndDate { start_date: ", ", end_date: ", "}")]
     fn range_from_gt_to() {
         let drl = DayRecordsList {
             records: BTreeMap::new(),
