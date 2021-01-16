@@ -4,8 +4,10 @@ use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
 
+type LiveStorage = BTreeMap<Date<Utc>, DayRecords>;
+
 pub(in crate::recordings) struct DayRecordsList {
-    records: BTreeMap<Date<Utc>, DayRecords>,
+    records: LiveStorage,
 }
 
 impl DayRecordsList {
@@ -52,7 +54,7 @@ impl DayRecordsList {
         &self,
         from: Option<Date<Utc>>,
         to: Option<Date<Utc>>,
-    ) -> Result<Option<BTreeMap<Date<Utc>, DayRecords>>, Box<dyn Error>> {
+    ) -> Result<Option<LiveStorage>, Box<dyn Error>> {
         let now = Utc::now().date();
         let from = from.unwrap_or(now);
         let to = to.unwrap_or(now);
@@ -67,15 +69,15 @@ impl DayRecordsList {
         let mut day_records_range = BTreeMap::<Date<Utc>, DayRecords>::new();
         for (key_date, value_records) in &self.records {
             if key_date >= &from && key_date <= &to {
-                day_records_range.insert(key_date.clone(), value_records.clone());
+                day_records_range.insert(*key_date, value_records.clone());
             }
         }
 
-        return if day_records_range.is_empty() {
+        if day_records_range.is_empty() {
             Ok(None)
         } else {
             Ok(Some(day_records_range))
-        };
+        }
     }
 }
 

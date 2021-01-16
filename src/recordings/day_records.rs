@@ -6,19 +6,19 @@ pub struct DayRecords {
 
 impl DayRecords {
     pub fn weight(&self) -> Option<f32> {
-        return if let Some(weight) = self.weight {
+        if let Some(weight) = self.weight {
             Some(weight)
         } else {
             None
-        };
+        }
     }
 
     pub fn notes(&self) -> Option<&str> {
-        return if let Some(notes) = &self.notes {
+        if let Some(notes) = &self.notes {
             Some(&notes[..])
         } else {
             None
-        };
+        }
     }
 }
 
