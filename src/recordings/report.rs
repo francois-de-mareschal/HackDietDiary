@@ -1,6 +1,7 @@
+use std::error::Error;
+
 use crate::recordings::day_records::DayRecords;
 use crate::recordings::error::RecordingsError;
-use std::error::Error;
 
 #[derive(Debug, PartialEq)]
 pub struct Report {

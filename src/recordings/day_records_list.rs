@@ -1,8 +1,9 @@
-use crate::recordings::day_records::DayRecords;
-use crate::recordings::error::RecordingsError;
 use chrono::prelude::*;
 use std::collections::BTreeMap;
 use std::error::Error;
+
+use crate::recordings::day_records::DayRecords;
+use crate::recordings::error::RecordingsError;
 
 type LiveStorage = BTreeMap<Date<Utc>, DayRecords>;
 
