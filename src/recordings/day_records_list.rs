@@ -77,6 +77,7 @@ impl DayRecordsList {
         if day_records_range.is_empty() {
             Ok(None)
         } else {
+            let day_records_range = day_records_range;
             Ok(Some(day_records_range))
         }
     }
@@ -116,7 +117,7 @@ mod tests {
         };
         let date = Utc::now().date();
 
-        drl.add(dr.clone(), Some(date.clone()))?;
+        drl.add(dr.clone(), Some(date))?;
 
         assert_eq!(*drl.records.get(&date).unwrap(), dr);
         Ok(())
@@ -150,7 +151,7 @@ mod tests {
             weight: Some(85.0),
             notes: None,
         };
-        let date = Utc.ymd(3994, 05, 18);
+        let date = Utc.ymd(3994, 5, 18);
 
         drl.add(dr, Some(date)).unwrap();
     }
@@ -380,7 +381,7 @@ mod tests {
             weight: Some(85.0),
             notes: None,
         };
-        let date = Utc.ymd(1994, 05, 18);
+        let date = Utc.ymd(1994, 5, 18);
         drl.records.insert(date, dr.clone());
 
         let btm = drl.range(Some(date), Some(date))?.unwrap();
@@ -406,8 +407,8 @@ mod tests {
             weight: Some(80.0),
             notes: None,
         };
-        let search_date = Utc.ymd(1994, 05, 18);
-        let first_date = Utc.ymd(2003, 05, 11);
+        let search_date = Utc.ymd(1994, 5, 18);
+        let first_date = Utc.ymd(2003, 5, 11);
         let last_date = Utc::now().date();
         drl.records.insert(first_date, first_dr.clone());
         drl.records.insert(last_date, second_dr.clone());
@@ -433,8 +434,8 @@ mod tests {
             notes: None,
         };
         let search_date = Utc::now().date();
-        let first_date = Utc.ymd(1994, 05, 18);
-        let last_date = Utc.ymd(2003, 05, 11);
+        let first_date = Utc.ymd(1994, 5, 18);
+        let last_date = Utc.ymd(2003, 5, 11);
         drl.records.insert(first_date, first_dr.clone());
         drl.records.insert(last_date, second_dr.clone());
 
